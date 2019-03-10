@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
 
 const TeacherSchema = new Schema({
@@ -29,6 +30,13 @@ const TeacherSchema = new Schema({
     required: true,
     trim: true
   }
+});
+
+// @ts-ignore
+TeacherSchema.pre('save', function(next) {
+  // @ts-ignore
+  this.password = bcrypt.hashSync(this.password, 12);
+  next();
 });
 
 module.exports = mongoose.model('Teacher', TeacherSchema);

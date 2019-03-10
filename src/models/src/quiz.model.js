@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const QuizModel = new Schema({
+const QuizSchema = new Schema({
   subject: {
     type: String,
     required: true,
@@ -45,15 +45,15 @@ const QuizModel = new Schema({
   ]
 });
 
-const CounterModel = new Schema({
+const CounterSchema = new Schema({
   _id: { type: String, required: true },
   seq: { type: Number, default: 1 }
 });
 
-const counter = mongoose.model('QuizCounter', CounterModel);
+const counter = mongoose.model('QuizCounter', CounterSchema);
 
 // @ts-ignore
-QuizModel.pre('save', function(next) {
+QuizSchema.pre('save', function(next) {
   counter
     .findByIdAndUpdate({ _id: 'entityId' }, { $inc: { seq: 1 } }, { new: true, upsert: true })
     .then(count => {
@@ -66,4 +66,4 @@ QuizModel.pre('save', function(next) {
     });
 });
 
-module.exports = mongoose.model('Quiz', QuizModel);
+module.exports = mongoose.model('Quiz', QuizSchema);
