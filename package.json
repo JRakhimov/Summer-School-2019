@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/JRakhimov/Summer-School-2019#readme",
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "debug": "github:NaNraptor/debug",

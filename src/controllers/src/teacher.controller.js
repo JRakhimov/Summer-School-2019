@@ -43,8 +43,8 @@ exports.remove = (req, res) => {
   const { teacherID } = req.params;
 
   TeacherModel.findOneAndDelete({ teacherID })
-    .then(teacherData => {
-      if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
+    .then(teacher => {
+      if (teacher) res.status(200).json({ status: true, teacher });
       else res.status(200).json({ status: false, message: 'Teacher to delete not found' });
     })
     .catch(err => res.status(200).json({ status: false, message: err }));
