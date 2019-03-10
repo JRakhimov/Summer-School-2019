@@ -3,8 +3,25 @@
   "version": "1.0.0",
   "description": "Project for contest",
   "main": "index.js",
+  "now": {
+    "name": "SummerSchoolContest",
+    "alias": "ssc-2019",
+    "env": {
+      "PORT": "3000",
+      "DEBUG": "Express:*,Mongo:*",
+      "SALT": "De1kooOMeZ1i4nAdtIOn7bIwrUf4aVhn8H8wAd1qpgYOYlhUfnWeyEFzkEypkIOr5BnMCJ5AMbckAqOQ5GxZcvdWZLtQEGa9usFGJhqigpxp5Ki63bAf1HbYFvz4kfvQb0mlbMBZRQutSO3tdEvPAvEZ9mnNzz19q1DuGXRc3Z62Vdff9yFgK6WvTduQpwGwNhIuNIN6iqcoYvQMdEXVT5MQvcp9JFTeQFCsiYYxmiHFtbHcrrnvz17wW5TNt24AZwK2YjgpJK2plhvOroXp4CnzdV753baFFyUM9THHlrvsLVz2KtQbIXYJ2ua0RdnnE3hlTTeWeRV1QhRsXEMmYcnhxaMAZcgFdyqDjcq129uCqj095eNkIcBJoTc7DMs8dt8gJ750BbNHkKbb",
+      "HOST": "https://ssc-2019.now.sh",
+      "MONGO_DB_URL": "mongodb://adminBackend:10011aaa@ds163825.mlab.com:63825/ss_2019"
+    },
+    "public": true
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "now": "now -p && now ln",
+    "rm": "now rm SummerSchoolContest -y",
+    "update": "npm run rm && npm run now",
+    "logs": "now logs ssc-2019.now.sh"
   },
   "repository": {
     "type": "git",
@@ -23,6 +40,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.0",
+    "lodash": "^4.17.11",
     "mongoose": "^5.4.18",
     "morgan": "^1.9.1",
     "supports-color": "^6.1.0"
