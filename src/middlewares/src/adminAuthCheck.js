@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
   jwt.verify(TOKEN, process.env.SALT, (err, decoded) => {
     if (err) return res.status(401).json({ status: false, message: 'Access denied -> pwnx.js:22:06' });
 
-    decoded.left = `${decoded.exp - ~~(Date.now() / 1000)}s`;
+    decoded.left = `${~~((decoded.exp - Date.now() / 1000) / 3600)}h`;
 
     ExpressLogger(decoded);
 

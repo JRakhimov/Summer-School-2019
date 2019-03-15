@@ -1,8 +1,6 @@
 const { request: Request, response: Response } = require('express');
 const { TeacherModel, SubjectModel } = require('../../models');
 
-const RESPONSE = 'fullName subjects teacherID';
-
 /**
  * @param {Request} req - Request class from express
  * @param {Response} res - Response class from express
@@ -10,7 +8,7 @@ const RESPONSE = 'fullName subjects teacherID';
 exports.getSingle = (req, res) => {
   const { teacherID } = req.params;
 
-  TeacherModel.findOne({ teacherID }, RESPONSE)
+  TeacherModel.findOne({ teacherID })
     .populate('subjects')
     .then(teacherData => res.status(200).json({ status: true, teacher: teacherData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
@@ -21,7 +19,7 @@ exports.getSingle = (req, res) => {
  * @param {Response} res - Response class from express
  */
 exports.getAll = (req, res) => {
-  TeacherModel.find(null, RESPONSE)
+  TeacherModel.find(null)
     .populate('subjects')
     .then(teachersData => res.status(200).json({ status: true, teachers: teachersData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
@@ -36,7 +34,7 @@ exports.create = (req, res) => {
 
   SubjectModel.findOne({ name: subject })
     .then(subjectData => {
-      if (subject) {
+      if (subjectData) {
         const teacher = new TeacherModel({ fullName, subjects: [subjectData], teacherID, password });
 
         teacher

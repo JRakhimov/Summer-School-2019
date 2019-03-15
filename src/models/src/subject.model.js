@@ -1,3 +1,4 @@
+const mongooseHidden = require('mongoose-hidden')();
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
@@ -13,6 +14,8 @@ const SubjectSchema = new Schema({
     index: { unique: true }
   }
 });
+
+SubjectSchema.plugin(mongooseHidden, { hidden: { _id: true } });
 
 const CounterSchema = new Schema({
   _id: { type: String, required: true },

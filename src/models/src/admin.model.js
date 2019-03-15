@@ -1,3 +1,4 @@
+const mongooseHidden = require('mongoose-hidden')();
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
@@ -16,13 +17,14 @@ const AdminSchema = new Schema({
     type: String,
     required: true,
     trim: true,
+    hide: true,
     minlength: 6
   }
 });
 
-// @ts-ignore
+AdminSchema.plugin(mongooseHidden, { hidden: { _id: true } });
+
 AdminSchema.pre('save', function(next) {
-  // @ts-ignore
   this.password = bcrypt.hashSync(this.password, 12);
   next();
 });

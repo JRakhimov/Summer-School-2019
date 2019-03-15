@@ -1,11 +1,12 @@
+const mongooseHidden = require('mongoose-hidden')();
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const QuizSchema = new Schema({
   subject: {
-    type: String,
-    required: true,
-    trim: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subject',
+    required: true
   },
 
   quizNumber: {
@@ -18,32 +19,21 @@ const QuizSchema = new Schema({
     default: Date.now()
   },
 
-  quetions: [
+  time: {
+    type: Number,
+    required: true
+  },
+
+  questions: [
     {
-      quetion: {
-        type: String,
-        required: true
-      },
-
-      type: {
-        type: String,
-        required: true,
-        enum: ['writeAnswer', 'multipleChoice', 'trueFalse']
-      },
-
-      answer: {
-        type: String,
-        required: true
-      },
-
-      variants: [
-        {
-          type: String
-        }
-      ]
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Question',
+      required: true
     }
   ]
 });
+
+QuizSchema.plugin(mongooseHidden, { hidden: { _id: true } });
 
 const CounterSchema = new Schema({
   _id: { type: String, required: true },
