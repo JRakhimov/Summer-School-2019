@@ -30,12 +30,12 @@ exports.getAll = (req, res) => {
  * @param {Response} res - Response class from express
  */
 exports.create = (req, res) => {
-  const { fullName, subject, teacherID, password } = req.body;
+  const { fullName, subjects, teacherID, password } = req.body;
 
-  SubjectModel.findOne({ name: subject })
+  SubjectModel.find({ name: { $in: subjects } })
     .then(subjectData => {
       if (subjectData) {
-        const teacher = new TeacherModel({ fullName, subjects: [subjectData], teacherID, password });
+        const teacher = new TeacherModel({ fullName, subjects: subjectData, teacherID, password });
 
         teacher
           .save()
@@ -55,6 +55,42 @@ exports.create = (req, res) => {
       }
     })
     .catch(err => res.status(200).json({ status: false, message: err }));
+};
+
+/**
+ * @param {Request} req - Request class from express
+ * @param {Response} res - Response class from express
+ */
+exports.update = (req, res) => {
+  const { teacherID } = req.params;
+
+  if (req.body.subjects) {
+    SubjectModel.find({ name: { $in: req.body.subjects } })
+      .then(subjectData => {
+        if (subjectData) {
+          req.body.subjects = subjectData;
+
+          TeacherModel.findOneAndUpdate({ teacherID }, req.body, { new: true, upsert: true })
+            .populate('subjects')
+            .then(teacherData => {
+              if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
+              else res.status(200).json({ status: false, message: 'Teacher to delete not found' });
+            })
+            .catch(err => res.status(200).json({ status: false, message: err }));
+        } else {
+          res.status(200).json({ status: false, message: `Subject with name ${subject} not found` });
+        }
+      })
+      .catch(err => res.status(200).json({ status: false, message: err }));
+  } else {
+    TeacherModel.findOneAndUpdate({ teacherID }, req.body, { new: true })
+      .populate('subjects')
+      .then(teacherData => {
+        if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
+        else res.status(200).json({ status: false, message: 'Teacher to update not found' });
+      })
+      .catch(err => res.status(200).json({ status: false, message: err }));
+  }
 };
 
 /**

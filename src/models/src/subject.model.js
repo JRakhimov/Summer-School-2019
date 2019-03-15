@@ -15,7 +15,7 @@ const SubjectSchema = new Schema({
   }
 });
 
-SubjectSchema.plugin(mongooseHidden, { hidden: { _id: true } });
+SubjectSchema.plugin(mongooseHidden, { hidden: { _id: false } });
 
 const CounterSchema = new Schema({
   _id: { type: String, required: true },
