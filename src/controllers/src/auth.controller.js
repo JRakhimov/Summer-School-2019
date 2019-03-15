@@ -17,7 +17,7 @@ exports.adminLogin = (req, res) => {
       if (adminData != null && bcrypt.compareSync(password, adminData.password)) {
         const token = jwt.sign({ login }, process.env.SALT, { expiresIn: 86400 });
 
-        res.status(200).json({ status: true, teacher: adminData, token });
+        res.status(200).json({ status: true, admin: { login }, token });
       } else {
         res.status(200).json({ status: false, message: 'Invalid login or password' });
       }
@@ -37,7 +37,15 @@ exports.teacherLogin = (req, res) => {
       if (teacherData != null && bcrypt.compareSync(password, teacherData.password)) {
         const token = jwt.sign({ teacherID }, process.env.SALT, { expiresIn: 86400 });
 
-        res.status(200).json({ status: true, teacher: teacherData, token });
+        res.status(200).json({
+          status: true,
+          teacher: {
+            fullName: teacherData.fullName,
+            teacherID: teacherData.teacherID,
+            subject: teacherData.subject
+          },
+          token
+        });
       } else {
         res.status(200).json({ status: false, message: 'Invalid login or password' });
       }
