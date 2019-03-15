@@ -1,7 +1,7 @@
 const { request: Request, response: Response } = require('express');
 const { TeacherModel } = require('../../models');
 
-const RESPONSE = 'fullName subject teacherID password';
+const RESPONSE = 'fullName subject teacherID';
 
 /**
  * @param {Request} req - Request class from express

@@ -2,39 +2,40 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const { Schema } = mongoose;
 
-const TeacherSchema = new Schema({
-  teacherID: {
-    type: String,
-    required: true,
-    lowercase: true,
-    trim: true,
-    minlength: 4,
-    index: { unique: true }
+const TeacherSchema = new Schema(
+  {
+    teacherID: {
+      type: String,
+      required: true,
+      lowercase: true,
+      trim: true,
+      minlength: 4,
+      index: { unique: true }
+    },
+
+    fullName: {
+      type: String,
+      required: true,
+      trim: true
+    },
+
+    password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 6
+    },
+
+    subject: {
+      type: String,
+      required: true,
+      trim: true
+    }
   },
+  { _id: false }
+);
 
-  fullName: {
-    type: String,
-    required: true,
-    trim: true
-  },
-
-  password: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 6
-  },
-
-  subject: {
-    type: String,
-    required: true,
-    trim: true
-  }
-});
-
-// @ts-ignore
 TeacherSchema.pre('save', function(next) {
-  // @ts-ignore
   this.password = bcrypt.hashSync(this.password, 12);
   next();
 });
