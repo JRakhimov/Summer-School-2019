@@ -53,7 +53,10 @@ exports.update = (req, res) => {
   const { name } = req.body;
 
   SubjectModel.findOneAndUpdate({ id }, { name }, { new: true })
-    .then(subjectData => res.status(200).json({ status: true, subject: subjectData }))
+    .then(subjectData => {
+      if (subjectData) res.status(200).json({ status: true, subject: subjectData });
+      else res.status(200).json({ status: false, message: 'Subject to update not found' });
+    })
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
 

@@ -26,11 +26,7 @@ const TeacherSchema = new Schema(
       minlength: 6
     },
 
-    subject: {
-      type: String,
-      required: true,
-      trim: true
-    }
+    subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }]
   },
   { _id: false }
 );
