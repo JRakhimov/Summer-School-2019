@@ -1,7 +1,7 @@
 const { request: Request, response: Response } = require('express');
-const { TeacherModel } = require('../../models');
+const { TeacherModel, SubjectModel } = require('../../models');
 
-const RESPONSE = 'fullName subject teacherID';
+const RESPONSE = 'fullName subjects teacherID';
 
 /**
  * @param {Request} req - Request class from express
@@ -11,6 +11,7 @@ exports.getSingle = (req, res) => {
   const { teacherID } = req.params;
 
   TeacherModel.findOne({ teacherID }, RESPONSE)
+    .populate('subjects')
     .then(teacherData => res.status(200).json({ status: true, teacher: teacherData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
@@ -21,6 +22,7 @@ exports.getSingle = (req, res) => {
  */
 exports.getAll = (req, res) => {
   TeacherModel.find(null, RESPONSE)
+    .populate('subjects')
     .then(teachersData => res.status(200).json({ status: true, teachers: teachersData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
@@ -31,11 +33,29 @@ exports.getAll = (req, res) => {
  */
 exports.create = (req, res) => {
   const { fullName, subject, teacherID, password } = req.body;
-  const teacher = new TeacherModel({ fullName, subject, teacherID, password });
 
-  teacher
-    .save()
-    .then(teacherData => res.status(200).json({ status: true, teacher: teacherData }))
+  SubjectModel.findOne({ name: subject })
+    .then(subjectData => {
+      if (subject) {
+        const teacher = new TeacherModel({ fullName, subjects: [subjectData], teacherID, password });
+
+        teacher
+          .save()
+          .then(teacherData =>
+            res.status(200).json({
+              status: true,
+              teacher: {
+                subjects: teacherData.subjects,
+                fullName: teacherData.fullName,
+                teacherID: teacherData.teacherID
+              }
+            })
+          )
+          .catch(err => res.status(200).json({ status: false, message: err }));
+      } else {
+        res.status(200).json({ status: false, message: `Subject with name ${subject} not found` });
+      }
+    })
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
 
@@ -47,6 +67,7 @@ exports.remove = (req, res) => {
   const { teacherID } = req.params;
 
   TeacherModel.findOneAndDelete({ teacherID })
+    .populate('subjects')
     .then(teacherData => {
       if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
       else res.status(200).json({ status: false, message: 'Teacher to delete not found' });
