@@ -21,13 +21,21 @@ const StudentSchema = new Schema({
 
   quizes: [
     {
+      subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Subject'
+      },
+
       quizNumber: {
         type: Number,
-        index: { unique: true }
+        index: { unique: true },
+        required: true
       },
+
       answers: [
         {
-          type: String
+          type: String,
+          required: true
         }
       ]
     }

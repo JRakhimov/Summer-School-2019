@@ -31,14 +31,15 @@ exports.getExactQuiz = (req, res) => {
   QuizModel.find(null)
     .populate('subject', '-_id')
     .then(quiz => {
-      if (!quiz || !quiz.length) {
+      quiz = quiz.find(el => el.subject.name === subject && el.quizNumber == quizNumber);
+
+      if (!quiz) {
         return res.status(200).json({
           status: false,
           message: `Quiz for subject ${subject} with quiz number ${quizNumber} not found`
         });
       }
 
-      quiz = quiz.find(el => el.subject.name === subject && el.quizNumber == quizNumber);
       res.status(200).json({ status: true, quiz });
     })
     .catch(err => res.status(200).json({ status: false, message: err }));
@@ -73,12 +74,12 @@ exports.getAnswersFromExactQuiz = (req, res) => {
  * @param {Response} res - Response class from express
  */
 exports.create = (req, res) => {
-  const { subject, date, questions, time } = req.body;
+  const { subject, date, questions, timeLimit } = req.body;
 
   SubjectModel.findOne({ name: subject })
     .then(subjectData => {
       if (subjectData) {
-        const quiz = new QuizModel({ subject: subjectData, date, questions, time });
+        const quiz = new QuizModel({ subject: subjectData, date, questions, timeLimit });
 
         quiz
           .save()

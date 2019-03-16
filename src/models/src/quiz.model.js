@@ -45,7 +45,7 @@ const QuizSchema = new Schema({
     default: Date.now
   },
 
-  time: {
+  timeLimit: {
     type: Number,
     required: true
   },

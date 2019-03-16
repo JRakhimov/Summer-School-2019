@@ -1,7 +1,8 @@
 const router = require('express').Router();
 
-const { teacherAuthCheck, adminAuthCheck } = require('../middlewares');
+const { teacherAuthCheck, adminAuthCheck, studentAuthCheck } = require('../middlewares');
 
+const studentSelf = require('./src/studentSelf.route');
 const teacherRoute = require('./src/teacher.route');
 const subjectRoute = require('./src/subject.route');
 const studentRoute = require('./src/student.route');
@@ -14,9 +15,11 @@ router.get('/', (_req, res) => res.sendStatus(200));
 router.use('/auth', authRoute);
 
 router.use('/admin', adminAuthCheck, adminRoute); // To add new admins, u should be admin too!
-router.use('/student', adminAuthCheck, studentRoute); // Later
+router.use('/student', adminAuthCheck, studentRoute); // To add/modify students, u should be admin!
 router.use('/teacher', adminAuthCheck, teacherRoute); // To add/modify teachers, u should be admin!
 router.use('/subject', adminAuthCheck, subjectRoute); // To add/modify subjects, u should be admin!
+
+router.use('/quiz', studentAuthCheck, studentSelf); // To answer to the quizes, u should be student!
 
 router.use('/quiz', teacherAuthCheck, quizRoute); // To add/modify quizes, u should be teacher!
 
