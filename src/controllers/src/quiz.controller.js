@@ -1,5 +1,5 @@
 const { request: Request, response: Response } = require('express');
-const { QuizModel, SubjectModel, QuestionModel } = require('../../models');
+const { QuizModel, SubjectModel } = require('../../models');
 
 /**
  * @param {Request} req - Request class from express
@@ -9,7 +9,7 @@ exports.getQuizesBySubject = (req, res) => {
   const { subject } = req.params;
 
   QuizModel.find(null)
-    .populate('subject')
+    .populate('subject', '-_id')
     .then(quizes => {
       if (!quizes || !quizes.length) {
         return res.status(200).json({ status: false, message: `Quizes for subject ${subject} not found` });
@@ -29,9 +29,9 @@ exports.getExactQuiz = (req, res) => {
   const { subject, quizNumber } = req.params;
 
   QuizModel.find(null)
-    .populate('subject questions', '-_id')
+    .populate('subject', '-_id')
     .then(quiz => {
-      if (!quiz) {
+      if (!quiz || !quiz.length) {
         return res.status(200).json({
           status: false,
           message: `Quiz for subject ${subject} with quiz number ${quizNumber} not found`
@@ -52,7 +52,7 @@ exports.getAnswersFromExactQuiz = (req, res) => {
   const { subject, quizNumber } = req.params;
 
   QuizModel.find(null)
-    .populate('subject')
+    .populate('subject', '-_id')
     .then(quiz => {
       if (!quiz) {
         return res.status(200).json({
@@ -78,8 +78,7 @@ exports.create = (req, res) => {
   SubjectModel.findOne({ name: subject })
     .then(subjectData => {
       if (subjectData) {
-        const questionsArray = questions.map(question => new QuestionModel(question));
-        const quiz = new QuizModel({ subject: subjectData, date, questions: questionsArray, time });
+        const quiz = new QuizModel({ subject: subjectData, date, questions, time });
 
         quiz
           .save()
@@ -103,7 +102,7 @@ exports.removeExactQuiz = (req, res) => {
     .then(subjectData => {
       if (subjectData) {
         QuizModel.findOneAndDelete({ quizNumber })
-          .populate('subject')
+          .populate('subject', '-_id')
           .then(quiz => {
             if (quiz) res.status(200).json({ status: true, quiz });
             else res.status(200).json({ status: false, message: 'Quiz to delete not found' });
