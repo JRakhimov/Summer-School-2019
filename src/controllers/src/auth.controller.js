@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-const { AdminModel, TeacherModel } = require('../../models');
+const { AdminModel, TeacherModel, StudentModel } = require('../../models');
+const { authViaEClass } = require('../../utils');
 
 /**
  * @param {Request} req - Request class from express
@@ -51,4 +52,42 @@ exports.teacherLogin = (req, res) => {
       }
     })
     .catch(err => res.status(400).json({ status: false, message: err }));
+};
+
+/**
+ * @param {Request} req - Request class from express
+ * @param {Response} res - Response class from express
+ */
+exports.studentLogin = async (req, res) => {
+  const { studentID, password } = req.body;
+
+  const eClassAuth = await authViaEClass(studentID, password).catch(err =>
+    res.status(400).json({ status: false, message: err })
+  );
+
+  if (eClassAuth.status) {
+    StudentModel.findOne({ studentID })
+      .then(studentData => {
+        if (studentData != null) {
+          const token = jwt.sign({ studentID }, process.env.SALT, { expiresIn: 86400 });
+
+          res.status(200).json({
+            status: true,
+            student: {
+              studentID: studentData.studentID,
+              fullName: eClassAuth.fullName,
+              quizes: studentData.quizes
+            },
+            token
+          });
+        } else {
+          res
+            .status(200)
+            .json({ status: false, message: `Student with ID ${studentID} not found in our database` });
+        }
+      })
+      .catch(err => res.status(400).json({ status: false, message: err }));
+  } else {
+    res.status(200).json({ status: false, message: 'Invalid login or password' });
+  }
 };

@@ -29,7 +29,7 @@ exports.getExactQuiz = (req, res) => {
   const { subject, quizNumber } = req.params;
 
   QuizModel.find(null)
-    .populate('subject')
+    .populate('subject questions', '-_id')
     .then(quiz => {
       if (!quiz) {
         return res.status(200).json({
@@ -40,6 +40,30 @@ exports.getExactQuiz = (req, res) => {
 
       quiz = quiz.find(el => el.subject.name === subject && el.quizNumber == quizNumber);
       res.status(200).json({ status: true, quiz });
+    })
+    .catch(err => res.status(200).json({ status: false, message: err }));
+};
+
+/**
+ * @param {Request} req - Request class from express
+ * @param {Response} res - Response class from express
+ */
+exports.getAnswersFromExactQuiz = (req, res) => {
+  const { subject, quizNumber } = req.params;
+
+  QuizModel.find(null)
+    .populate('subject')
+    .then(quiz => {
+      if (!quiz) {
+        return res.status(200).json({
+          status: false,
+          message: `Quiz for subject ${subject} with quiz number ${quizNumber} not found`
+        });
+      }
+
+      quiz = quiz.find(el => el.subject.name === subject && el.quizNumber == quizNumber);
+      const answers = quiz.questions.map(question => question.answer);
+      res.status(200).json({ status: true, answers });
     })
     .catch(err => res.status(200).json({ status: false, message: err }));
 };

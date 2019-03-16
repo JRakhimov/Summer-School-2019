@@ -74,7 +74,7 @@ exports.update = (req, res) => {
             .populate('subjects')
             .then(teacherData => {
               if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
-              else res.status(200).json({ status: false, message: 'Teacher to delete not found' });
+              else res.status(200).json({ status: false, message: 'Teacher to update not found' });
             })
             .catch(err => res.status(200).json({ status: false, message: err }));
         } else {
