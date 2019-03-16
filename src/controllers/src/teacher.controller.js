@@ -9,8 +9,14 @@ exports.getSingle = (req, res) => {
   const { teacherID } = req.params;
 
   TeacherModel.findOne({ teacherID })
-    .populate('subjects')
-    .then(teacherData => res.status(200).json({ status: true, teacher: teacherData }))
+    .populate('subjects', '-_id')
+    .then(teacherData => {
+      if (!teacherData) {
+        res.status(200).json({ status: false, message: `Teacher with id ${teacherID} not found` });
+      }
+
+      res.status(200).json({ status: true, teacher: teacherData });
+    })
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
 
@@ -20,7 +26,7 @@ exports.getSingle = (req, res) => {
  */
 exports.getAll = (req, res) => {
   TeacherModel.find(null)
-    .populate('subjects')
+    .populate('subjects', '-_id')
     .then(teachersData => res.status(200).json({ status: true, teachers: teachersData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
@@ -71,7 +77,7 @@ exports.update = (req, res) => {
           req.body.subjects = subjectData;
 
           TeacherModel.findOneAndUpdate({ teacherID }, req.body, { new: true, upsert: true })
-            .populate('subjects')
+            .populate('subjects', '-_id')
             .then(teacherData => {
               if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
               else res.status(200).json({ status: false, message: 'Teacher to update not found' });
@@ -84,7 +90,7 @@ exports.update = (req, res) => {
       .catch(err => res.status(200).json({ status: false, message: err }));
   } else {
     TeacherModel.findOneAndUpdate({ teacherID }, req.body, { new: true })
-      .populate('subjects')
+      .populate('subjects', '-_id')
       .then(teacherData => {
         if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
         else res.status(200).json({ status: false, message: 'Teacher to update not found' });
@@ -101,7 +107,7 @@ exports.remove = (req, res) => {
   const { teacherID } = req.params;
 
   TeacherModel.findOneAndDelete({ teacherID })
-    .populate('subjects')
+    .populate('subjects', '-_id')
     .then(teacherData => {
       if (teacherData) res.status(200).json({ status: true, teacher: teacherData });
       else res.status(200).json({ status: false, message: 'Teacher to delete not found' });

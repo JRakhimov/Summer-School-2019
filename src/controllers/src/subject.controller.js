@@ -1,8 +1,6 @@
 const { request: Request, response: Response } = require('express');
 const { SubjectModel } = require('../../models');
 
-const RESPONSE = 'name id';
-
 /**
  * @param {Request} req - Request class from express
  * @param {Response} res - Response class from express
@@ -10,7 +8,7 @@ const RESPONSE = 'name id';
 exports.getSingle = (req, res) => {
   const { id } = req.params;
 
-  SubjectModel.findOne({ id }, RESPONSE)
+  SubjectModel.findOne({ id }, '-_id')
     .then(subjectData => res.status(200).json({ status: true, subject: subjectData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
@@ -20,7 +18,7 @@ exports.getSingle = (req, res) => {
  * @param {Response} res - Response class from express
  */
 exports.getAll = (req, res) => {
-  SubjectModel.find(null, RESPONSE)
+  SubjectModel.find(null, '-_id')
     .then(subjectData => res.status(200).json({ status: true, subjects: subjectData }))
     .catch(err => res.status(200).json({ status: false, message: err }));
 };
